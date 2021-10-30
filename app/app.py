@@ -21,6 +21,10 @@ def login():
 def create():
     return(users.create(mysql))
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    return(users.clearCookie())
+
 #GET REQUEST
 @app.route('/tasks', methods=['GET'])
 def tasks():

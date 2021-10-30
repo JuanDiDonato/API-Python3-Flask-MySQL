@@ -1,6 +1,6 @@
 from config import bcrypt
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, set_access_cookies, unset_jwt_cookies
 
 #Registrar usuario
 def addUser(mysql):
@@ -36,13 +36,27 @@ def loginUser(mysql):
                dbPassword= password_f.encode()
                checkPassword = bcrypt.comparePassword(password, dbPassword)
                if checkPassword:
+                    response = jsonify(isAuth = True)
                     access_token = create_access_token(identity=[user,id])
-                    return jsonify(token = access_token, isAuth = True), 200
+                    set_access_cookies(response, access_token)
+                    return response,200
+                    # return jsonify(token = access_token, isAuth = True), 200
+                    #En el frontend, para podes verificar la cookie, en la consulta a una ruta
+                    #se debe agregar el header:
+                    # headers: {
+                    # 'X-CSRF-TOKEN': getCookie('csrf_access_token'),
+                    # },
                else:
                     return jsonify(message = "Contraseña incorrecta", error = True), 401
           else:
                return jsonify(message = 'Usuario erroneo', error = True), 404
      else: return jsonify(message="Complete todos los campos", error = True), 400
+
+#Logout
+def clearCookie():
+     response = jsonify({"msg": "logout successful"})
+     unset_jwt_cookies(response)
+     return response, 200
 
 #Crear tarea
 @jwt_required()
