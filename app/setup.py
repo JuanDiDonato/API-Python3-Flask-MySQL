@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
 setup(
-    name = 'src',
+    name = 'app',
     packages = find_packages(),
 )
